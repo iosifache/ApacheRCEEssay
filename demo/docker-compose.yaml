@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+    server:
+        build: server/with-cgi
+        container_name: server
+    rogue_host:
+        build: attacker
+        container_name: attacker
+        privileged: true
+        links:
+            - server
