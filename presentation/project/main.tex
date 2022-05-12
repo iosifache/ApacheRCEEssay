@@ -1,0 +1,55 @@
+\documentclass{beamer}
+
+\usepackage{main}
+
+\begin{document}
+
+\begin{frame}[noframenumbering]
+    \begin{center}
+    
+        \begin{columns}
+            \column{.4\textwidth}
+    
+            \includegraphics[width=0.4\textwidth, right]{images/acs.jpg}
+    
+    		\column{.6\textwidth}
+    
+            {
+                \tiny
+    
+                \textbf{\detailcountry} \\
+                \textbf{\detailuniversity} \\
+                \textbf{\detailfaculty} \\
+                \textbf{\detailspecialization} \\
+            }
+        \end{columns}
+    
+        \vspace*{1.5cm}
+    
+        \textbf{\huge{\detailtitle}}
+    
+        \vspace*{1cm}
+
+        \tiny
+        \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+            \textbf{Supervisor} & \textbf{Students}\\
+            \tiny \detailadviser & \tiny \detailfirstauthor\\
+             & \tiny \detailsecondauthor
+        \end{tabular*}
+
+        \vspace*{1.5cm}
+
+        \textbf{\detailcity} \\
+        \textbf{\detaildate}
+
+    \end{center}
+\end{frame}
+
+\begin{frame}{Lorem Ipsum} \pause
+	\begin{itemize}
+		\item Lorem ipsum dolor sit amet \pause
+	    \item Nulla eget sapien interdum
+	\end{itemize}
+\end{frame}
+
+\end{document}

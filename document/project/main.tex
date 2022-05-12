@@ -1,0 +1,58 @@
+\documentclass[12pt,a4paper,english,onecolumn]{IEEEtran}
+
+\usepackage{datetime}
+\usepackage{caption}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{minted}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[paper=a4paper, top=2cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage[
+    backend=bibtex,
+    style=numeric,
+    bibencoding=ascii,
+    sorting=ynt
+]{biblatex}
+\addbibresource{bibliography}
+
+\renewcommand*\contentsname{Table of Content}
+\renewcommand*\listfigurename{List of Images}
+\renewcommand\listingscaption{Example}
+\renewcommand{\listtablename}{List of Tables}
+\captionsetup[table]{name=Table}
+\renewcommand*\figurename{Image}
+\usemintedstyle{bw}
+\hyphenpenalty=100000
+\nocite{*}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+
+\title{Lorem Ipsum}
+
+\author{John DOE$^{1}$\\
+$^{1}$\emph{Politehnica University of Bucharest, Computer Science Department, Romania}\\
+Email: $^{1}$john.doe@stud.acs.upb.ro}
+
+\maketitle
+
+\begin{abstract}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ut turpis nisi. Mauris a pretium lacus. Mauris eget lectus eu ipsum varius sodales. Vivamus et blandit tellus. Donec ornare, ipsum eu rutrum dapibus, justo diam lacinia velit, id tincidunt arcu ante et ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec tincidunt nisi eu aliquam tempor. Donec nec aliquet nunc. Integer consectetur velit nec dui euismod, elementum feugiat nunc suscipit. Curabitur aliquet sodales mi, quis rutrum tellus. 
+
+\end{abstract}
+
+\section{Lorem Ipsum}
+
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ut turpis nisi. Mauris a pretium lacus. Mauris eget lectus eu ipsum varius sodales. Vivamus et blandit tellus. Donec ornare, ipsum eu rutrum dapibus, justo diam lacinia velit, id tincidunt arcu ante et ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec tincidunt nisi eu aliquam tempor. Donec nec aliquet nunc. Integer consectetur velit nec dui euismod, elementum feugiat nunc suscipit. Curabitur aliquet sodales mi, quis rutrum tellus.
+
+Nulla eget sapien interdum, luctus ex vitae, mattis orci. Praesent pulvinar, felis ut vulputate aliquam, augue quam ultricies eros, ut tincidunt diam nulla ac lectus. Ut augue ipsum, placerat ut lectus nec, dapibus ullamcorper ex. Nullam et mauris sed magna facilisis efficitur et convallis nulla. Proin et enim et sem tempus aliquam. Donec id nibh ac nisi rhoncus iaculis ac ut est. Aenean vel metus rhoncus, convallis lorem in, ornare ante. Donec et sapien neque. Nam condimentum sodales tellus, non tristique metus aliquet eu. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Fusce tempus lectus eros, et porttitor magna fermentum quis. Duis feugiat, nulla nec feugiat vulputate, mi urna accumsan libero, ut facilisis nibh urna ut ante. Proin convallis vitae ex tincidunt pellentesque.
+
+Nulla at efficitur orci, vel vehicula eros. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla at tortor sit amet ipsum ultricies faucibus. Sed commodo enim tortor, sit amet volutpat nibh porta nec. Morbi hendrerit mi in posuere sollicitudin. Proin feugiat quis erat ut hendrerit. Nunc ligula nibh, dapibus sed elementum quis, dapibus lacinia nisi. 
+
+\section{Bibliography}
+\nocite{*}
+\printbibliography[heading=none]
+
+\end{document}
