@@ -29,29 +29,101 @@
 
 \begin{document}
 
-\title{Lorem Ipsum}
+\title{CVE-2021-41773}
 
-\author{John DOE$^{1}$\\
+\author{George-Andrei IOSIF$^{1}$\\
 $^{1}$\emph{Politehnica University of Bucharest, Computer Science Department, Romania}\\
-Email: $^{1}$john.doe@stud.acs.upb.ro}
+Email: $^{1}$george\_andrei.iosif@stud.acs.upb.ro}
 
 \maketitle
 
-\begin{abstract}
+\section{Introduction}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ut turpis nisi. Mauris a pretium lacus. Mauris eget lectus eu ipsum varius sodales. Vivamus et blandit tellus. Donec ornare, ipsum eu rutrum dapibus, justo diam lacinia velit, id tincidunt arcu ante et ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec tincidunt nisi eu aliquam tempor. Donec nec aliquet nunc. Integer consectetur velit nec dui euismod, elementum feugiat nunc suscipit. Curabitur aliquet sodales mi, quis rutrum tellus. 
+The Apache HTTP Server (often known as \mintinline{text}{httpd}) is a free and open source web server for Linux and Windows. It was first released in 1995 and has since become the most widely used software of its kind. According to Netcraft, it was running in 24 percent of the servers of the world's busiest websites in January 2021.
 
-\end{abstract}
+Support for programming languages (Perl and PHP), TLS/SSL, IPv6 compatibility, and a reverse proxy mode that allows caching are just a few of the features.
 
-\section{Lorem Ipsum}
+A security advisory published in October 2021 said that the Apache HTTP Server was vulnerable to path traversal and file disclosure owing to a path normalization flaw in certain circumstances. Later, it was discovered that if the Common Gateway Interface (abbreviated CGI) module is enabled, this vulnerability (identified as CVE-2021-41773) can lead to remote code execution.
 
- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ut turpis nisi. Mauris a pretium lacus. Mauris eget lectus eu ipsum varius sodales. Vivamus et blandit tellus. Donec ornare, ipsum eu rutrum dapibus, justo diam lacinia velit, id tincidunt arcu ante et ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec tincidunt nisi eu aliquam tempor. Donec nec aliquet nunc. Integer consectetur velit nec dui euismod, elementum feugiat nunc suscipit. Curabitur aliquet sodales mi, quis rutrum tellus.
+\section{Vulnerability Analysis}
 
-Nulla eget sapien interdum, luctus ex vitae, mattis orci. Praesent pulvinar, felis ut vulputate aliquam, augue quam ultricies eros, ut tincidunt diam nulla ac lectus. Ut augue ipsum, placerat ut lectus nec, dapibus ullamcorper ex. Nullam et mauris sed magna facilisis efficitur et convallis nulla. Proin et enim et sem tempus aliquam. Donec id nibh ac nisi rhoncus iaculis ac ut est. Aenean vel metus rhoncus, convallis lorem in, ornare ante. Donec et sapien neque. Nam condimentum sodales tellus, non tristique metus aliquet eu. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Fusce tempus lectus eros, et porttitor magna fermentum quis. Duis feugiat, nulla nec feugiat vulputate, mi urna accumsan libero, ut facilisis nibh urna ut ante. Proin convallis vitae ex tincidunt pellentesque.
+The path normalization method used by Apache HTTP Server removes any suspicious parts of the URI that the client requests. In 2.4.49, it was unable to recognize a series of characters related to directory traversal, notably \mintinline{text}{../}, due to alterations introduced before October 2021.
 
-Nulla at efficitur orci, vel vehicula eros. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla at tortor sit amet ipsum ultricies faucibus. Sed commodo enim tortor, sit amet volutpat nibh porta nec. Morbi hendrerit mi in posuere sollicitudin. Proin feugiat quis erat ut hendrerit. Nunc ligula nibh, dapibus sed elementum quis, dapibus lacinia nisi. 
+A second requirement that made a web server vulnerable was the setting of the value of the \mintinline{text}{Directory} XML field to \mintinline{text}{Require all granted}. This permits the server to provide files to users outside the served files' folder (for example, HTML pages).
+
+\vspace{0.3cm}
+
+\begin{minted}{text}
+<Directory/>
+    AllowOverride none
+    Require all granted
+</Directory>
+\end{minted}
+
+\vspace{0.3cm}
+
+In this way, \mintinline{text}{/cgi-bin/.%2e/.%2e/.%2e/.%2e/<path_to_file>} represents the path requested via \mintinline{text}{GET} by an exploit. \mintinline{text}{<path_to_file>} denotes the absolute path of the file that will be included in the response (via the path traversal vulnerability).
+
+When the module for handling CGI scripts is enabled (by activating \mintinline{text}{mod_cgi} in Apache's configuration file), this vulnerability leads to remote code execution. By including a shell binary (for example, \mintinline{text}{/bin/bash}) with the technique described above, the CGI module will execute it. Data from requests (for example, Bash commands in a \mintinline{text}{POST} request) will be passed to \mintinline{text}{stdin}. The characters returned to \mintinline{text}{stdout} by the shell (namely the output from running the provided command) will then be redirected to the web client. In this manner, the latter will achieve a code execution.
+
+This vulnerability allows remote code execution when the module for handling CGI scripts is activated (by activating \mintinline{text}{mod cgi} in Apache's configuration file). The CGI module will execute a shell binary (for example, \mintinline{text}{/bin/bash}) if it is included with the technique mentioned above. \mintinline{text}{stdin} will receive data from requests (for example, Bash commands in a \mintinline{text}{POST} request). The shell's output (the output from running the specified command) will be routed to the web client. In this way, the latter will be able to execute code.
+
+\vspace{0.3cm}
+
+\begin{minted}{text}
+<IfModule !mpm_prefork_module>
+    LoadModule cgid_module modules/mod_cgid.so
+</IfModule>
+\end{minted}
+
+\section{Impact}
+
+The attacker can get at least an arbitrary file read by exploiting this vulnerability. Because the web server is normally launched as a non-privileged user (for example, \mintinline{text}{daemon}), it is limited to a few files, but it may leak information (configuration files, log files, etc.) that will be useful later in the attack.
+
+On the other side, the same user constraint limits code execution on the remote system, but it might be combined with another vulnerability in the operating system to achieve \mintinline{text}{Administrator} or \mintinline{text}{root} capabilities.
+
+\section{Mitigations}
+
+The server's owners might easily patch this issue by updating to a newer version of Apache HTTP Server, such as 2.4.51 or higher.
+
+Some obstacles, such as sophisticated operating procedures that prevent timely changes of production servers, can make the above difficult. In these circumstances, the security network devices that act as middleware between the vulnerable system and its clients may block requests from known attackers (such as those offered by Juniper Networks \cite{juniper}) or match specific content signatures. Positive Research, for example, provided shortly after the vulnerability was disclosed two Suricata (an open source intrusion detection and prevention system) rules that match exploit attempts \cite{pt_ruleset}.
+
+\vspace{0.3cm}
+
+\begin{minted}{text}
+alert http any any -> any any (
+    [...]
+    flow: established, to_server;
+    content: "%2e/";
+    nocase;
+    http_raw_uri;
+    pcre: "/\/(\.|%2e)%2e\//Ii";
+    threshold: type limit, track by_src, count 1, seconds 60;
+    [...]
+)
+\end{minted}
+
+\vspace{0.3cm}
+
+\section{Exploitation in the Wild}
+
+CVE-2021-41773 was a 0-day vulnerability that was exploited in the wild, according to the Apache HTTP Server Project's core team's security advisory \cite{apache_vulns}. Tenable, the company behind the well-known vulnerability scanner Nessus, detected one hundred vulnerable web servers around the world at the time using Shodan.
+
+After the patch was deployed, attackers continued to utilize it to gain access to sensitive information or run commands on web servers. Here are some significant instances:
+\begin{itemize}
+    \item Posts on cybercrime forums, identified by CloudSEK's threat intelligence team, that described the vulnerability \cite{cloudsek};
+    \item Attacks against Asian high ranking officials, conducted by Chinese hackers \cite{cloudsek};
+    \item Mention in the Known Exploited Vulnerabilities Catalog of USA's Cybersecurity and Infrastructure Security Agency \cite{cisa_catalog};
+    \item Detections in Trend Micro's honeypots \cite{trendmicro}; and
+    \item Usage in Remote Access Tools and miners, for example by a Golang malware,\\H2Miner/Kinsing \cite{countercraft}.
+\end{itemize}
+
+\section{Conclusions}
+
+In conclusion, despite the CVE-2021-41773 vulnerability's original severity, the white hat security community has demonstrated that an arbitrary file read can easily be translated into remote code execution capabilities. Despite the rapid release of a new version, courtesy of the Apache HTTP Server Project's staff, there were still unpatched servers on the Internet that cybercriminals were exploiting.
 
 \section{Bibliography}
+
 \nocite{*}
 \printbibliography[heading=none]
 

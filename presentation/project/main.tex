@@ -1,6 +1,7 @@
 \documentclass{beamer}
 
 \usepackage{main}
+\usepackage{minted}
 
 \begin{document}
 
@@ -32,9 +33,9 @@
 
         \tiny
         \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-            \textbf{Supervisor} & \textbf{Students}\\
-            \tiny \detailadviser & \tiny \detailfirstauthor\\
-             & \tiny \detailsecondauthor
+            & \textbf{Student}\\
+            & \tiny \detailfirstauthor\\
+            & \tiny \detailsecondauthor
         \end{tabular*}
 
         \vspace*{1.5cm}
@@ -45,10 +46,55 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Lorem Ipsum} \pause
+\begin{frame}{Introduction} \pause
 	\begin{itemize}
-		\item Lorem ipsum dolor sit amet \pause
-	    \item Nulla eget sapien interdum
+		\item Apache HTTP Server, a free and open source web server \pause
+	    \item Path traversal found in October 2021 \pause
+	    \item Escalated in remote code execution if CGI is enabled
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Vulnerability Analysis} \pause
+	\begin{itemize}
+	    \item Weak path normalization in 2.4.49 \pause
+		\item \mintinline{text}{Directory} set to \mintinline{text}{Require all granted} \pause
+        \item \mintinline{text}{/cgi-bin/../../../../<path_to_file>} for information disclosure\pause
+	    \item \mintinline{text}{/cgi-bin/../../../../bin/bash}, CGI and \mintinline{text}{POST}-ed commands for remote code execution
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Impact} \pause
+	\begin{itemize}
+		\item Arbitrary file read \pause
+	    \item (Limited) Code execution \pause
+	    \item \mintinline{text}{Administrator} or \mintinline{text}{root} capabilities when chained with a local privilege escalation
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Mitigations} \pause
+	\begin{itemize}
+		\item Upgrade to 2.4.51 \pause
+	    \item IP blacklists \pause
+	    \item IPS rules
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Exploitation in the Wild} \pause
+	\begin{itemize}
+		\item 0-day vulnerability before releasing the advisory \pause
+	    \item 100.000+ vulnerable web servers via Shodan \pause
+	    \item Posts on cybercrime forums \pause
+	    \item Detections in Trend Micro's honeypots \pause
+	    \item Usage in RATs and miners
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusions} \pause
+	\begin{itemize}
+		\item O-day, but discovered in time \pause
+	    \item Patch as a straightforward mitigation \pause
+	    \item Continuous exploitation in the wild \pause
+	    \item \mintinline{text}{@iosifache} on GitHub for these LaTeX projects (based on reusable templates) and demo
 	\end{itemize}
 \end{frame}
 
